@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8" data-aos="fade-up">
+            <div class="d-flex align-items-center mb-4">
+                <a href="/list-ticket" class="btn btn-light rounded-circle shadow-sm me-3"><i class="fas fa-arrow-left"></i></a>
+                <div>
+                    <h5 class="fw-bold mb-0">Detail Tiket #<%= ticket._id.toString().substr(-6) %></h5>
+                    <span class="badge bg-<%= ticket.status=='open'?'warning':ticket.status=='answered'?'success':'secondary' %> rounded-pill">
+                        <%= ticket.status.toUpperCase() %>
+                    </span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-light border-0 p-4">
+                    <h5 class="fw-bold mb-1"><%= ticket.subject %></h5>
+                    <small class="text-muted"><i class="far fa-clock me-1"></i><%= ticket.createdAt.toLocaleString() %></small>
+                </div>
+                <div class="card-body p-4 bg-white" style="max-height: 500px; overflow-y: auto;">
+                    <!-- Pesan Awal -->
+                    <div class="d-flex mb-4">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 rounded-top-0 w-100">
+                            <strong class="d-block text-primary mb-1">Anda:</strong>
+                            <p class="mb-0" style="white-space: pre-wrap;"><%= ticket.message.split('\n\n[')[0] %></p>
+                        </div>
+                    </div>
+
+                    <!-- History Chat -->
+                    <% 
+                    const history = ticket.message.split('\n\n[').slice(1);
+                    history.forEach(chat => {
+                        const isUser = chat.startsWith('User]:');
+                        const text = chat.split(']: ')[1];
+                    %>
+                    <div class="d-flex mb-3 <%= isUser ? 'justify-content-end' : 'justify-content-start' %>">
+                        <div class="<%= isUser ? 'bg-primary text-white' : 'bg-light text-dark' %> p-3 rounded-4" style="max-width: 80%;">
+                            <p class="mb-0 small fw-bold opacity-75"><%= isUser ? 'Anda' : 'Admin Support' %></p>
+                            <p class="mb-0" style="white-space: pre-wrap;"><%= text %></p>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Form Reply -->
+            <div class="card border-0 shadow-sm rounded-4 p-3">
+                <form action="/ticket/reply" method="POST">
+                    <input type="hidden" name="id" value="<%= ticket._id %>">
+                    <div class="input-group">
+                        <textarea name="message" class="form-control bg-light border-0 rounded-3 me-2" placeholder="Tulis balasan..." rows="1" required></textarea>
+                        <button class="btn btn-primary rounded-3 px-4"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

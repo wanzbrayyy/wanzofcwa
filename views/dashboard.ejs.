@@ -1,0 +1,415 @@
+<%- include('partials/header') %>
+
+<div class="container py-4">
+    
+    <% if (typeof onboarding !== 'undefined' && onboarding.length > 0) { %>
+    <div id="onboardingCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden mb-4" data-bs-ride="carousel" data-aos="fade-down">
+        <div class="carousel-inner">
+            <% onboarding.forEach((item, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                <div class="d-flex align-items-center bg-white p-4">
+                    <% if(item.imageUrl) { %>
+                    <img src="<%= item.imageUrl %>" class="rounded-3 me-3 d-none d-sm-block" width="80" height="80" style="object-fit: cover;">
+                    <% } %>
+                    <div>
+                        <h5 class="fw-bold text-primary mb-1"><i class="fas fa-bullhorn me-2"></i><%= item.title %></h5>
+                        <p class="mb-0 text-muted small"><%= item.message %></p>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (!user.isPremium) { %>
+    <div class="card border-0 bg-gradient-primary text-white shadow-lg rounded-4 mb-5 position-relative overflow-hidden" data-aos="fade-up" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe);">
+        <div class="position-absolute top-0 end-0 p-3 opacity-25">
+            <i class="fas fa-crown fa-5x text-white"></i>
+        </div>
+        <div class="card-body p-4 position-relative z-1">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="fw-bold mb-2">Upgrade to Premium</h3>
+                    <p class="mb-0 opacity-90">Nikmati akses 10 Sesi Bot, Prioritas Server, dan Fitur Inject Code hanya <strong>Rp 5.000</strong>.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <form action="/payment/upgrade" method="POST">
+                        <button class="btn btn-light text-primary fw-bold rounded-pill px-5 shadow-sm py-2 hover-scale">Upgrade Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+        <div>
+            <h4 class="fw-bold text-dark m-0">Cloud Servers</h4>
+            <p class="text-muted small m-0">Instance Status (<%= projects.length %> / <%= user.serverSlots %>)</p>
+        </div>
+        <% if (projects.length < user.serverSlots) { %>
+            <button class="btn btn-dark rounded-pill px-4 shadow-sm fw-bold hover-scale" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                <i class="fas fa-plus me-2"></i>Deploy
+            </button>
+        <% } else { %>
+            <a href="/pricing" class="btn btn-warning text-white rounded-pill px-4 shadow-sm fw-bold hover-scale">
+                <i class="fas fa-arrow-up me-2"></i>Add Slot
+            </a>
+        <% } %>
+    </div>
+
+    <div class="row g-4 mb-5" data-aos="fade-up">
+        <% if (projects.length === 0) { %>
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+                    <div class="mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex p-4">
+                            <i class="fas fa-server fa-3x text-secondary opacity-50"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Active Servers</h5>
+                    <p class="text-muted small mb-0">Deploy server pertama Anda untuk menjalankan script bot.</p>
+                </div>
+            </div>
+        <% } else { %>
+            <% projects.forEach(p => { %>
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-scale transition-card bg-white">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary">
+                                <i class="fas fa-terminal fs-4"></i>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                                    <li>
+                                        <form action="/project/<%= p.uuid %>/delete" method="POST" onsubmit="return confirm('Hapus server ini permanen?')">
+                                            <button type="submit" class="dropdown-item text-danger small fw-bold"><i class="fas fa-trash me-2"></i>Terminate</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-dark"><%= p.name %></h5>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success text-white small fw-bold">Online</span>
+                        </div>
+                        <p class="text-muted small mb-4 text-truncate"><%= p.description || 'NodeJS Container Environment' %></p>
+                        <a href="/user/project/<%= p.uuid %>" class="btn btn-outline-dark rounded-pill w-100 fw-bold small">Open Console</a>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        <% } %>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+        <div id="tour-dash">
+            <h4 class="fw-bold text-dark m-0">WhatsApp Sessions</h4>
+            <p class="text-muted small m-0">Active Device (<%= user.sessions.length %> / <%= user.maxSessions %>)</p>
+        </div>
+        <% if (user.sessions.length < user.maxSessions) { %>
+            <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold hover-scale" id="addBotBtn" data-bs-toggle="modal" data-bs-target="#addBotModal">
+                <i class="fab fa-whatsapp me-2"></i>Connect
+            </button>
+        <% } else { %>
+            <button class="btn btn-light text-muted border rounded-pill px-4 fw-bold cursor-not-allowed">Limit Reached</button>
+        <% } %>
+    </div>
+
+    <div class="row g-4" id="sessionContainer">
+        <% if (user.sessions.length === 0) { %>
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+                    <div class="mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-4">
+                            <i class="fab fa-whatsapp fa-3x text-success"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Device Connected</h5>
+                    <p class="text-muted small mb-0">Klik tombol Connect untuk menghubungkan WhatsApp.</p>
+                </div>
+            </div>
+        <% } else { %>
+            <% user.sessions.forEach(sess => { %>
+            <div class="col-md-6 col-lg-4" id="sess-<%= sess.sessionId %>" data-aos="fade-up">
+                <div class="card border-0 shadow-sm rounded-4 h-100 hover-scale bg-white">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="position-relative">
+                                <img src="https://ui-avatars.com/api/?name=<%= sess.phoneNumber %>&background=25D366&color=fff" class="rounded-circle" width="50">
+                                <span class="position-absolute bottom-0 end-0 p-1 bg-<%= sess.status == 'connected' ? 'success' : 'warning' %> border border-white rounded-circle"></span>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="fw-bold mb-0 text-dark"><%= sess.phoneNumber || 'Connecting...' %></h6>
+                                <span class="badge bg-light text-dark border rounded-pill fw-normal mt-1"><%= sess.status %></span>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <button class="btn btn-light w-100 rounded-3 text-primary fw-bold small py-2" data-bs-toggle="modal" data-bs-target="#codeModal-<%= sess.sessionId %>">
+                                        <i class="fas fa-code me-1"></i> Script
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-light w-100 rounded-3 text-dark fw-bold small py-2" data-bs-toggle="modal" data-bs-target="#configModal-<%= sess.sessionId %>">
+                                        <i class="fas fa-cog me-1"></i> Config
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger bg-opacity-10 text-danger border-0 w-100 rounded-3 fw-bold small py-2" onclick="deleteSession('<%= user._id %>', '<%= sess.sessionId %>')">
+                                <i class="fas fa-unlink me-2"></i>Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Script -->
+            <div class="modal fade" id="codeModal-<%= sess.sessionId %>" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                        <div class="modal-header bg-dark text-white border-0 py-3">
+                            <h6 class="modal-title fw-bold font-monospace"><i class="fas fa-code me-2"></i>Custom Injector.js</h6>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/session/save-code" method="POST">
+                            <input type="hidden" name="sessionId" value="<%= sess.sessionId %>">
+                            <div class="modal-body bg-dark p-0">
+                                <textarea name="customCode" class="form-control bg-dark text-success font-monospace border-0 p-3" style="height: 400px; resize: none;" placeholder="// Tulis custom case/fitur bot disini..." spellcheck="false"><%= sess.customCode || '' %></textarea>
+                            </div>
+                            <div class="modal-footer bg-dark border-top border-secondary py-2">
+                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-4 fw-bold">Simpan Script</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Config -->
+            <div class="modal fade" id="configModal-<%= sess.sessionId %>" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content border-0 shadow-lg rounded-4">
+                        <div class="modal-header border-0 bg-white sticky-top">
+                            <div>
+                                <h5 class="modal-title fw-bold">Bot Settings</h5>
+                                <p class="text-muted small mb-0">Konfigurasi khusus untuk sesi ini.</p>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/session/update-config" method="POST">
+                            <input type="hidden" name="sessionId" value="<%= sess.sessionId %>">
+                            <div class="modal-body p-4">
+                                <div class="mb-4">
+                                    <h6 class="fw-bold text-primary mb-3" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Info Utama</h6>
+                                    <div class="form-floating mb-2">
+                                        <input type="text" name="botname" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.botname || 'FionaBot' %>" required placeholder="Name">
+                                        <label>Nama Bot</label>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="text" name="ownerName" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.ownerName || user.fullname %>" required placeholder="Owner">
+                                                <label>Nama Owner</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="number" name="ownerNumber" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.ownerNumber || user.whatsappNumber %>" required placeholder="628xx">
+                                                <label>Nomor Owner</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="fw-bold text-success mb-3" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Pembayaran (Deposit)</h6>
+                                    <div class="form-floating mb-2">
+                                        <input type="text" name="payName" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.payName || '' %>" placeholder="Name">
+                                        <label>Atas Nama Akun</label>
+                                    </div>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-4">
+                                            <input type="text" name="payDana" class="form-control bg-light border-0 rounded-3 form-sm" value="<%= sess.config?.payDana || '' %>" placeholder="No. Dana">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="payGopay" class="form-control bg-light border-0 rounded-3 form-sm" value="<%= sess.config?.payGopay || '' %>" placeholder="No. Gopay">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="payOvo" class="form-control bg-light border-0 rounded-3 form-sm" value="<%= sess.config?.payOvo || '' %>" placeholder="No. OVO">
+                                        </div>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="text" name="payQris" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.payQris || '' %>" placeholder="Url">
+                                        <label>Link Gambar QRIS</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <h6 class="fw-bold text-warning mb-3" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">System & Delay</h6>
+                                    <div class="form-floating mb-2">
+                                        <input type="text" name="ppobApiKey" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.ppobApiKey || '' %>" placeholder="Key">
+                                        <label>PPOB API Key (Jagoan)</label>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="number" name="delayPush" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.delayPush || 1000 %>" placeholder="3000">
+                                                <label>Push Delay (ms)</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input type="number" name="delayJpm" class="form-control bg-light border-0 rounded-3" value="<%= sess.config?.delayJpm || 2000 %>" placeholder="4000">
+                                                <label>JPM Delay (ms)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                                <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2 shadow-sm">Simpan Konfigurasi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        <% } %>
+    </div>
+</div>
+
+<!-- Single-Use Modals (not in partials) -->
+<div class="modal fade" id="donateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-warning bg-opacity-10">
+                <h5 class="modal-title fw-bold text-warning-emphasis">Traktir Kopi ☕</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/payment/donate" method="POST">
+                <div class="modal-body p-4">
+                    <label class="small fw-bold text-muted mb-2">NOMINAL DONASI</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 fw-bold">Rp</span>
+                        <input type="number" name="amount" class="form-control form-control-lg bg-light border-0 fw-bold" placeholder="10000" min="1000" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold text-white shadow-sm">Lanjut Pembayaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addBotModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0">
+                <div>
+                    <h5 class="modal-title fw-bold">Pairing Code</h5>
+                    <p class="text-muted small mb-0">Hubungkan bot tanpa scan QR.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-floating mb-3">
+                    <input type="number" id="phoneInput" class="form-control bg-light border-0 fw-bold text-center fs-4" placeholder="628xxx">
+                    <label class="w-100 text-center">Nomor WhatsApp (628xxx)</label>
+                </div>
+                <button class="btn btn-success w-100 btn-lg rounded-pill fw-bold shadow-sm" onclick="requestPairing()">
+                    <i class="fas fa-link me-2"></i>Dapatkan Kode
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-dark text-white">
+                <div>
+                    <h5 class="modal-title fw-bold">New Instance</h5>
+                    <p class="text-white-50 small mb-0">Deploy cloud server baru.</p>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/project/create" method="POST">
+                <div class="modal-body p-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="name" class="form-control bg-light border-0" placeholder="Name" required>
+                        <label>Server Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea name="description" class="form-control bg-light border-0" style="height: 100px" placeholder="Desc"></textarea>
+                        <label>Description (Optional)</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold shadow-sm">Deploy Server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script>
+    const socket = io();
+    const addBotModal = new bootstrap.Modal(document.getElementById('addBotModal'));
+
+    function requestPairing() {
+        const phone = document.getElementById('phoneInput').value;
+        if (!phone || phone.length < 10) return Swal.fire('Error', 'Masukkan nomor diawali 62', 'error');
+        socket.emit('create-session', { userId: '<%= user._id %>', phoneNumber: phone });
+        Swal.fire({ title: 'Memproses...', text: 'Sedang meminta kode pairing...', didOpen: () => Swal.showLoading() });
+    }
+
+    socket.on('pairing-code', (data) => {
+        addBotModal.hide();
+        Swal.fire({
+            title: 'KODE PAIRING ANDA',
+            html: `
+                <div class="bg-light p-4 rounded-4 mb-3 border border-2 border-success border-opacity-25">
+                    <h1 class="text-success fw-bold display-3 m-0 font-monospace" style="letter-spacing: 5px;">${data.code}</h1>
+                </div>
+                <p class="text-muted small">Salin kode dan masukkan ke menu <strong>Perangkat Tertaut > Tautkan dengan No HP</strong> di WhatsApp Anda.</p>
+            `,
+            confirmButtonText: 'Selesai',
+            confirmButtonColor: '#198754'
+        }).then(() => location.reload());
+    });
+
+    socket.on('error', msg => Swal.fire('Gagal', msg, 'error'));
+    socket.on('connection-status', d => { 
+        if(d.status === 'connected') {
+            Swal.fire({ icon: 'success', title: 'Terhubung!', text: 'Bot berhasil dikoneksikan.', timer: 2000, showConfirmButton: false })
+            .then(() => location.reload());
+        }
+    });
+
+    function deleteSession(uid, sid) {
+        Swal.fire({
+            title: 'Hapus Sesi?',
+            text: "Bot akan berhenti dan anda harus scan ulang.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((res) => {
+            if(res.isConfirmed) {
+                socket.emit('delete-session', { userId: uid, sessionId: sid });
+                document.getElementById(`sess-${sid}`).remove();
+                setTimeout(() => location.reload(), 1500);
+            }
+        })
+    }
+</script>

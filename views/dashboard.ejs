@@ -1,0 +1,510 @@
+<%- include('partials/header') %>
+
+<style>
+    @media (min-width: 992px) {
+        .modal-xl { max-width: 1140px; }
+    }
+    .modal-config-scroll { max-height: 70vh; overflow-y: auto; }
+</style>
+
+<div class="container py-4">
+    
+    <% if (typeof onboarding !== 'undefined' && onboarding.length > 0) { %>
+    <div id="onboardingCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden mb-4 bg-white" data-bs-ride="carousel" data-aos="fade-down">
+        <div class="carousel-inner">
+            <% onboarding.forEach((item, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>" data-bs-interval="5000">
+                <div class="d-flex align-items-center p-0">
+                    <div class="row g-0 w-100">
+                        <% if(item.imageUrl) { %>
+                        <div class="col-md-4 col-lg-3 position-relative" style="min-height: 200px;">
+                            <img src="<%= item.imageUrl %>" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8 col-lg-9">
+                            <div class="p-4 d-flex flex-column justify-content-center h-100">
+                                <h4 class="fw-bold text-dark mb-2"><%= item.title %></h4>
+                                <p class="text-muted mb-0" style="line-height: 1.6;"><%= item.message %></p>
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <div class="col-12">
+                            <div class="p-5 text-center">
+                                <div class="mb-3">
+                                    <span class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-flex">
+                                        <i class="fas fa-bullhorn fa-2x"></i>
+                                    </span>
+                                </div>
+                                <h4 class="fw-bold text-dark"><%= item.title %></h4>
+                                <p class="text-muted mx-auto" style="max-width: 600px;"><%= item.message %></p>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+    <% } %>
+
+    <% if(typeof flashSale !== 'undefined' && flashSale && flashSale.active) { %>
+    <div class="card border-0 bg-danger text-white shadow-lg rounded-4 mb-4 position-relative overflow-hidden" data-aos="zoom-in">
+        <div class="position-absolute top-0 end-0 p-3 opacity-25">
+            <i class="fas fa-bolt fa-5x text-warning"></i>
+        </div>
+        <div class="card-body p-4 position-relative z-1">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-warning text-dark fw-bold me-2 animate__animated animate__flash animate__infinite">FLASH SALE ⚡</span>
+                        <h4 class="fw-bold mb-0"><%= flashSale.title %></h4>
+                    </div>
+                    <p class="mb-2 opacity-90"><%= flashSale.description %></p>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <div id="flashTimer" class="fw-bold font-monospace fs-5">Loading...</div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <% if(user.flashSaleClaimed) { %>
+                        <button class="btn btn-secondary rounded-pill px-5 py-2 fw-bold" disabled>SOLD OUT / CLAIMED</button>
+                    <% } else { %>
+                        <form action="/payment/flash-claim" method="POST">
+                            <div class="d-flex justify-content-end gap-3 mb-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rewardType" id="typeServer" value="server" checked>
+                                    <label class="form-check-label fw-bold text-white" for="typeServer">Server Slot</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rewardType" id="typeSession" value="session">
+                                    <label class="form-check-label fw-bold text-white" for="typeSession">Bot Slot</label>
+                                </div>
+                            </div>
+
+                            <% if(flashSale.price === 0 || flashSale.isFree) { %>
+                                <button class="btn btn-warning text-dark fw-bold rounded-pill px-5 shadow-sm hover-scale py-2">
+                                    <i class="fas fa-gift me-2"></i>KLAIM GRATIS
+                                </button>
+                            <% } else { %>
+                                <button class="btn btn-warning text-dark fw-bold rounded-pill px-5 shadow-sm hover-scale py-2">
+                                    <i class="fas fa-shopping-cart me-2"></i>BELI Rp <%= flashSale.price.toLocaleString() %>
+                                </button>
+                            <% } %>
+                        </form>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <script>
+            (function(){
+                const endTime = new Date("<%= flashSale.endTime %>").getTime();
+                const timerEl = document.getElementById("flashTimer");
+                const interval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = endTime - now;
+                    if (distance < 0) {
+                        clearInterval(interval);
+                        if(timerEl) timerEl.innerHTML = "EXPIRED";
+                        return;
+                    }
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    if(timerEl) timerEl.innerHTML = `${hours}j ${minutes}m ${seconds}d`;
+                }, 1000);
+            })();
+        </script>
+    </div>
+    <% } %>
+
+    <% if (!user.isPremium) { %>
+    <div class="card border-0 bg-primary text-white shadow-lg rounded-4 mb-5 position-relative overflow-hidden" data-aos="fade-up" style="background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);">
+        <div class="position-absolute end-0 bottom-0 opacity-25 me-n5 mb-n5">
+            <i class="fas fa-crown" style="font-size: 15rem; transform: rotate(-20deg);"></i>
+        </div>
+        <div class="card-body p-5 position-relative z-1">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-2">Upgrade to Premium</h2>
+                    <p class="mb-0 fs-5 opacity-90">Dapatkan akses 10 Sesi Bot, Prioritas Server, dan Fitur Custom Injector hanya <strong>Rp 5.000</strong>.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <form action="/payment/upgrade" method="POST">
+                        <button class="btn btn-light text-primary fw-bold rounded-pill px-5 py-3 shadow-sm hover-scale">
+                            <i class="fas fa-bolt me-2"></i>Upgrade Sekarang
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+        <div>
+            <h4 class="fw-bold text-dark m-0"><i class="fas fa-server me-2 text-primary"></i>Cloud Servers</h4>
+            <p class="text-muted small m-0">Instance Status (<%= projects.length %> / <%= user.serverSlots %>)</p>
+        </div>
+        <% if(projects.length < user.serverSlots) { %>
+            <button class="btn btn-dark rounded-pill px-4 py-2 shadow-sm fw-bold hover-scale" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                <i class="fas fa-plus me-2"></i>Deploy Server
+            </button>
+        <% } else { %>
+            <a href="/pricing" class="btn btn-warning text-white rounded-pill px-4 py-2 shadow-sm fw-bold hover-scale">
+                <i class="fas fa-arrow-up me-2"></i>Add Slot
+            </a>
+        <% } %>
+    </div>
+
+    <div class="row g-4 mb-5" data-aos="fade-up">
+        <% if(projects.length === 0) { %>
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+                    <div class="mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex p-4">
+                            <i class="fas fa-server fa-3x text-secondary opacity-25"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Active Servers</h5>
+                    <p class="text-muted small mb-0">Deploy server pertama Anda untuk menjalankan script bot.</p>
+                </div>
+            </div>
+        <% } %>
+        <% projects.forEach(p => { %>
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100 hover-scale bg-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary">
+                            <i class="fas fa-terminal fs-4"></i>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                                <li>
+                                    <form action="/project/<%= p.uuid %>/delete" method="POST" onsubmit="return confirm('Hapus server ini permanen?')">
+                                        <button class="dropdown-item text-danger small fw-bold"><i class="fas fa-trash me-2"></i>Terminate</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-dark"><%= p.name %></h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                            <i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Running
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-4 text-truncate"><%= p.description || 'NodeJS Container Environment' %></p>
+                    <a href="/user/project/<%= p.uuid %>" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-2">
+                        Open Console <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+        <div id="tour-dash">
+            <h4 class="fw-bold text-dark m-0"><i class="fab fa-whatsapp me-2 text-success"></i>WhatsApp Sessions</h4>
+            <p class="text-muted small m-0">Active Device (<%= user.sessions.length %> / <%= user.maxSessions %>)</p>
+        </div>
+        <% if (user.sessions.length < user.maxSessions) { %>
+            <button class="btn btn-success rounded-pill px-4 py-2 shadow-sm fw-bold hover-scale" id="addBotBtn" data-bs-toggle="modal" data-bs-target="#addBotModal">
+                <i class="fas fa-plus me-2"></i>Connect
+            </button>
+        <% } else { %>
+            <button class="btn btn-secondary rounded-pill px-4 py-2 fw-bold cursor-not-allowed">Limit Reached</button>
+        <% } %>
+    </div>
+
+    <div class="row g-4" id="sessionContainer">
+        <% if (user.sessions.length === 0) { %>
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+                    <div class="mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-4">
+                            <i class="fab fa-whatsapp fa-3x text-success opacity-50"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Device Connected</h5>
+                    <p class="text-muted small mb-0">Klik tombol Connect untuk menghubungkan WhatsApp.</p>
+                </div>
+            </div>
+        <% } %>
+        <% user.sessions.forEach(sess => { %>
+        <div class="col-md-6 col-lg-4" id="sess-<%= sess.sessionId %>" data-aos="fade-up">
+            <div class="card border-0 shadow-sm rounded-4 h-100 hover-scale bg-white">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="position-relative">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 56px; height: 56px;">
+                                <i class="fab fa-whatsapp fa-2x"></i>
+                            </div>
+                            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-<%= sess.status == 'connected' ? 'success' : 'warning' %> border border-white rounded-circle" id="status-<%= sess.sessionId %>"></span>
+                        </div>
+                        <div class="ms-3 overflow-hidden">
+                            <h6 class="fw-bold mb-0 text-dark text-truncate"><%= sess.phoneNumber || 'Connecting...' %></h6>
+                            <span class="badge bg-light text-dark border rounded-pill fw-normal mt-1" id="text-<%= sess.sessionId %>"><%= sess.status %></span>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-light border w-100 rounded-pill text-primary fw-bold small py-2" data-bs-toggle="modal" data-bs-target="#codeModal-<%= sess.sessionId %>">
+                                    <i class="fas fa-code me-1"></i> Script
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-light border w-100 rounded-pill text-dark fw-bold small py-2" data-bs-toggle="modal" data-bs-target="#configModal-<%= sess.sessionId %>">
+                                    <i class="fas fa-cog me-1"></i> Config
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <form action="/session/restart" method="POST">
+                            <input type="hidden" name="sessionId" value="<%= sess.sessionId %>">
+                            <button type="submit" class="btn btn-warning text-white w-100 rounded-pill fw-bold shadow-sm py-2 mt-2">
+                                <i class="fas fa-sync-alt me-2"></i>Restart Session
+                            </button>
+                        </form>
+
+                        <button class="btn btn-danger w-100 rounded-pill fw-bold shadow-sm py-2" onclick="deleteSession('<%= user._id %>', '<%= sess.sessionId %>')">
+                            <i class="fas fa-power-off me-2"></i>Disconnect
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Horizontal Config Modal (Tombol Simpan Di Atas) -->
+        <div class="modal fade" id="configModal-<%= sess.sessionId %>" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <form action="/session/update-config" method="POST">
+                        <div class="modal-header border-0 bg-white px-4 pt-4 pb-2 align-items-center">
+                            <div>
+                                <h5 class="modal-title fw-bold">Bot Configuration</h5>
+                                <p class="text-muted small mb-0">Restart sesi setelah menyimpan perubahan.</p>
+                            </div>
+                            <div class="ms-auto d-flex gap-2">
+                                <button type="submit" class="btn btn-dark rounded-pill fw-bold px-4 shadow-sm">
+                                    <i class="fas fa-save me-2"></i>Simpan Konfigurasi
+                                </button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="sessionId" value="<%= sess.sessionId %>">
+                        <div class="modal-body px-4 py-4 modal-config-scroll">
+                            <div class="row g-4">
+                                <!-- Info Utama -->
+                                <div class="col-lg-4 border-end">
+                                    <h6 class="fw-bold text-primary mb-3 text-uppercase small ls-1"><i class="fas fa-info-circle me-2"></i>Info Utama</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Nama Bot</label>
+                                        <input type="text" name="botname" class="form-control bg-light border-0" value="<%= sess.config?.botname %>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Nama Owner</label>
+                                        <input type="text" name="ownerName" class="form-control bg-light border-0" value="<%= sess.config?.ownerName %>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Nomor Owner</label>
+                                        <input type="number" name="ownerNumber" class="form-control bg-light border-0" value="<%= sess.config?.ownerNumber %>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Link Telegram</label>
+                                        <input type="text" name="telegram" class="form-control bg-light border-0" value="<%= sess.config?.telegram %>">
+                                    </div>
+                                </div>
+
+                                <!-- Pembayaran -->
+                                <div class="col-lg-4 border-end">
+                                    <h6 class="fw-bold text-success mb-3 text-uppercase small ls-1"><i class="fas fa-wallet me-2"></i>Pembayaran</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Atas Nama</label>
+                                        <input type="text" name="payName" class="form-control bg-light border-0" value="<%= sess.config?.payName %>">
+                                    </div>
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <input type="text" name="payDana" class="form-control bg-light border-0" placeholder="Dana" value="<%= sess.config?.payDana %>">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" name="payGopay" class="form-control bg-light border-0" placeholder="Gopay" value="<%= sess.config?.payGopay %>">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" name="payOvo" class="form-control bg-light border-0" placeholder="OVO" value="<%= sess.config?.payOvo %>">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Link QRIS (URL Gambar)</label>
+                                        <input type="text" name="payQris" class="form-control bg-light border-0" value="<%= sess.config?.payQris %>">
+                                    </div>
+                                </div>
+
+                                <!-- System -->
+                                <div class="col-lg-4">
+                                    <h6 class="fw-bold text-warning mb-3 text-uppercase small ls-1"><i class="fas fa-cogs me-2"></i>System & API</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">PPOB API Key</label>
+                                        <input type="text" name="ppobApiKey" class="form-control bg-light border-0" value="<%= sess.config?.ppobApiKey %>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted">Audio URL</label>
+                                        <input type="text" name="audioUrl" class="form-control bg-light border-0" value="<%= sess.config?.audioUrl %>">
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label small fw-bold text-muted">Push Delay (ms)</label>
+                                            <input type="number" name="delayPush" class="form-control bg-light border-0" value="<%= sess.config?.delayPush %>">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small fw-bold text-muted">JPM Delay (ms)</label>
+                                            <input type="number" name="delayJpm" class="form-control bg-light border-0" value="<%= sess.config?.delayJpm %>">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="codeModal-<%= sess.sessionId %>" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="modal-header bg-dark text-white border-0 py-3 px-4">
+                        <h6 class="modal-title fw-bold font-monospace"><i class="fas fa-code me-2"></i>Custom Injector.js</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="/session/save-code" method="POST">
+                        <input type="hidden" name="sessionId" value="<%= sess.sessionId %>">
+                        <div class="modal-body bg-dark p-0">
+                            <textarea name="customCode" class="form-control bg-dark text-success font-monospace border-0 p-4" style="height: 400px; resize: none; border-radius: 0;" placeholder="// Tulis custom case/fitur bot disini..." spellcheck="false"><%= sess.customCode || '' %></textarea>
+                        </div>
+                        <div class="modal-footer bg-dark border-top border-secondary py-3 px-4">
+                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">Simpan Script</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 start-0 p-4" style="z-index: 1050; padding-bottom: 80px !important;">
+    <button class="btn btn-warning rounded-circle shadow-lg p-3 hover-scale" data-bs-toggle="modal" data-bs-target="#donateModal" title="Donate">
+        <i class="fas fa-coffee fa-lg text-white"></i>
+    </button>
+</div>
+
+<%- include('partials/modals') %>
+<%- include('partials/footer') %>
+
+<script>
+    const socket = io();
+    const addBotModal = new bootstrap.Modal(document.getElementById('addBotModal'));
+
+    function requestPairing() {
+        const phone = document.getElementById('phoneInput').value;
+        if (!phone) return Swal.fire('Error', 'Masukkan nomor diawali 62', 'error');
+        socket.emit('create-session', { userId: '<%= user._id %>', phoneNumber: phone });
+        Swal.fire({ title: 'Memproses...', text: 'Sedang meminta kode pairing...', didOpen: () => Swal.showLoading() });
+    }
+
+    socket.on('pairing-code', (data) => {
+        addBotModal.hide();
+        Swal.fire({
+            title: 'KODE PAIRING ANDA',
+            html: `
+                <div class="bg-light p-4 rounded-4 mb-3 border border-2 border-success border-opacity-25">
+                    <h1 class="text-success fw-bold display-3 m-0 font-monospace" style="letter-spacing: 5px;">${data.code}</h1>
+                </div>
+                <p class="text-muted small">Salin kode dan masukkan ke menu <strong>Perangkat Tertaut > Tautkan dengan No HP</strong> di WhatsApp Anda.</p>
+            `,
+            confirmButtonText: 'Selesai',
+            confirmButtonColor: '#198754'
+        }).then(() => location.reload());
+    });
+
+    socket.on('error', msg => Swal.fire('Gagal', msg, 'error'));
+    
+    // STRICT FIX: NO RELOAD IN SOCKET LISTENER
+    socket.on('connection-status', d => { 
+        const statusBadge = document.getElementById(`status-${d.sessionId}`);
+        const statusText = document.getElementById(`text-${d.sessionId}`);
+        
+        if (statusBadge && statusText) {
+            if (d.status === 'connected') {
+                statusBadge.classList.remove('bg-warning');
+                statusBadge.classList.add('bg-success');
+                statusText.innerText = 'connected';
+                // Only alert via Toast, never reload
+                const toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                toast.fire({ icon: 'success', title: 'Bot Terhubung!' });
+            } else {
+                statusBadge.classList.remove('bg-success');
+                statusBadge.classList.add('bg-warning');
+                statusText.innerText = 'disconnected';
+            }
+        }
+    });
+
+    function deleteSession(uid, sid) {
+        Swal.fire({
+            title: 'Hapus Sesi?',
+            text: "Bot akan berhenti dan anda harus scan ulang.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((res) => {
+            if(res.isConfirmed) {
+                socket.emit('delete-session', { userId: uid, sessionId: sid });
+                const el = document.getElementById(`sess-${sid}`);
+                if(el) el.remove();
+            }
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('status') === 'restarted') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Restart Berhasil',
+                text: 'Sesi bot telah dimuat ulang!',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            // Cleanup URL
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: newUrl}, '', newUrl);
+        } else if (urlParams.get('status') === 'success_claim') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Claim Berhasil',
+                text: 'Reward telah ditambahkan ke akun anda!',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: newUrl}, '', newUrl);
+        } else if (urlParams.get('status') === 'already_claimed') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Anda sudah pernah klaim promo ini!',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: newUrl}, '', newUrl);
+        }
+    });
+</script>

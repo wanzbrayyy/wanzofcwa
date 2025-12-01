@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+        <div>
+            <h4 class="fw-bold mb-0">Support Tickets</h4>
+            <p class="text-muted small mb-0">Riwayat bantuan teknis anda.</p>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#createTicketModal">
+            <i class="fas fa-plus me-2"></i>Buat Tiket
+        </button>
+    </div>
+
+    <% if (tickets.length === 0) { %>
+        <div class="text-center py-5" data-aos="fade-up">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130362-1800926.png" width="200" class="opacity-50 mb-3">
+            <p class="text-muted fw-bold">Belum ada tiket support.</p>
+        </div>
+    <% } else { %>
+        <div class="row g-3">
+            <% tickets.forEach(t => { %>
+            <div class="col-md-6" data-aos="fade-up">
+                <a href="/ticket/detail/<%= t._id %>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 hover-scale bg-white">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-<%= t.status=='open'?'warning':t.status=='answered'?'success':'secondary' %> rounded-pill px-3">
+                                    <%= t.status.toUpperCase() %>
+                                </span>
+                                <small class="text-muted"><%= t.createdAt.toLocaleDateString() %></small>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1"><%= t.subject %></h5>
+                            <p class="text-muted small mb-0 text-truncate"><%= t.message %></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<!-- Modal Buat Tiket -->
+<div class="modal fade" id="createTicketModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="fw-bold">Buat Tiket Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/ticket/create" method="POST">
+                <div class="modal-body p-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="subject" class="form-control bg-light border-0 rounded-3" placeholder="Subject" required>
+                        <label>Judul Masalah</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea name="message" class="form-control bg-light border-0 rounded-3" style="height: 150px" placeholder="Pesan" required></textarea>
+                        <label>Deskripsi Detail</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm">Kirim Tiket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fiona Bot Panel</title>
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6c5ce7">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/k3612t2.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+            --bg-body: #f8f9fa;
+            --success: #00b894;
+            --danger: #d63031;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--dark);
+            padding-bottom: 80px; 
+        }
+        .navbar-top {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+            z-index: 9999;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        .nav-item-mobile {
+            text-decoration: none;
+            color: #b2bec3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .nav-item-mobile i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-item-mobile.active {
+            color: var(--primary);
+        }
+        .nav-item-mobile.active i {
+            transform: translateY(-2px);
+        }
+        .logout-trigger {
+            position: relative;
+        }
+        .logout-menu {
+            position: absolute;
+            bottom: 60px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+            width: 120px;
+        }
+        .logout-menu.show { display: block; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .img-cover { object-fit: cover; }
+        .cursor-pointer { cursor: pointer; }
+        .hover-scale { transition: transform 0.2s; }
+        .hover-scale:hover { transform: scale(1.02); }
+        
+        @media(min-width: 992px) {
+            .bottom-nav { display: none; }
+            body { padding-bottom: 0; padding-top: 80px; }
+        }
+        @media(max-width: 991px) {
+            .navbar-top { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+
+    <nav class="navbar navbar-expand-lg navbar-top fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="/dashboard">
+                <i class="fas fa-robot text-primary me-2"></i>Fiona
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mx-auto gap-4">
+                    <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='dashboard'?'text-primary fw-bold':'' %>" href="/dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='news'?'text-primary fw-bold':'' %>" href="/news">News</a></li>
+                    <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='tutorial'?'text-primary fw-bold':'' %>" href="/tutorial">Tutorial</a></li>
+                    <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='settings'?'text-primary fw-bold':'' %>" href="/settings">Settings</a></li>
+                </ul>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                        <img src="<%= typeof user != 'undefined' ? user.profilePic : '' %>" class="rounded-circle border" width="40" height="40">
+                        <div class="ms-2 d-none d-lg-block text-dark">
+                            <small class="d-block fw-bold"><%= typeof user != 'undefined' ? user.username : 'Guest' %></small>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/list-ticket"><i class="fas fa-headset me-2"></i>Support</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="bottom-nav">
+        <a href="/dashboard" class="nav-item-mobile <%= typeof page != 'undefined' && page=='dashboard'?'active':'' %>">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <a href="/news" class="nav-item-mobile <%= typeof page != 'undefined' && page=='news'?'active':'' %>">
+            <i class="fas fa-newspaper"></i> News
+        </a>
+        <a href="/tutorial" class="nav-item-mobile <%= typeof page != 'undefined' && page=='tutorial'?'active':'' %>">
+            <i class="fas fa-book"></i> Guide
+        </a>
+        <a href="/settings" class="nav-item-mobile <%= typeof page != 'undefined' && page=='settings'?'active':'' %>">
+            <i class="fas fa-cog"></i> Set
+        </a>
+        <div class="nav-item-mobile cursor-pointer logout-trigger" onclick="document.getElementById('mobileLogout').classList.toggle('show')">
+            <i class="fas fa-chevron-up"></i> Menu
+            <div class="logout-menu" id="mobileLogout">
+                <a href="/profile" class="d-block text-decoration-none text-dark mb-2 small"><i class="fas fa-user me-2"></i>Profile</a>
+                <a href="/list-ticket" class="d-block text-decoration-none text-dark mb-2 small"><i class="fas fa-headset me-2"></i>Support</a>
+                <a href="/logout" class="d-block text-decoration-none text-danger small"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </div>
+        </div>
+    </div>

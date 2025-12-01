@@ -1,0 +1,98 @@
+<!-- Create Server Modal -->
+<div class="modal fade" id="createProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-dark text-white p-4">
+                <div>
+                    <h5 class="modal-title fw-bold">New Instance</h5>
+                    <p class="text-white-50 small mb-0">Deploy cloud server baru.</p>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/project/create" method="POST">
+                <div class="modal-body p-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="name" class="form-control bg-light border-0 rounded-3" placeholder="Name" required>
+                        <label>Server Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea name="description" class="form-control bg-light border-0 rounded-3" style="height: 100px" placeholder="Desc"></textarea>
+                        <label>Description (Optional)</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold shadow-sm py-2">Deploy Server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bot Modal -->
+<div class="modal fade" id="addBotModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 p-4 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold">Pairing Code</h5>
+                    <p class="text-muted small mb-0">Hubungkan bot tanpa scan QR.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-floating mb-3">
+                    <input type="number" id="phoneInput" class="form-control bg-light border-0 fw-bold text-center fs-3 rounded-3" placeholder="628xxx">
+                    <label class="w-100 text-center">Nomor WhatsApp (628xxx)</label>
+                </div>
+                <button class="btn btn-success w-100 btn-lg rounded-pill fw-bold shadow-sm py-3" onclick="requestPairing()">
+                    <i class="fas fa-link me-2"></i>Dapatkan Kode
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Donate Modal -->
+<div class="modal fade" id="donateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-warning bg-opacity-10 p-4">
+                <h5 class="modal-title fw-bold text-warning-emphasis">Traktir Kopi ☕</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/payment/donate" method="POST">
+                <div class="modal-body p-4">
+                    <label class="small fw-bold text-muted mb-2">NOMINAL DONASI</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 fw-bold">Rp</span>
+                        <input type="number" name="amount" class="form-control form-control-lg bg-light border-0 fw-bold" placeholder="10000" min="1000" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold text-white shadow-sm py-2">Lanjut Pembayaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Modal -->
+<div class="modal fade" id="ticketModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="fw-bold">Contact Support</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/ticket/create" method="POST">
+                <div class="modal-body">
+                    <input type="text" name="subject" class="form-control bg-light border-0 mb-3" placeholder="Subject / Masalah" required>
+                    <textarea name="message" class="form-control bg-light border-0" rows="5" placeholder="Jelaskan masalah anda secara detail..." required></textarea>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-dark rounded-pill px-4 w-100">Kirim Tiket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

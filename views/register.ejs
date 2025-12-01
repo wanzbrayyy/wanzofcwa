@@ -1,0 +1,97 @@
+<%- include('partials/header') %>
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-white py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5" data-aos="fade-up">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Buat Akun Baru</h3>
+                    <p class="text-muted small">Mulai kelola bot WhatsApp Anda secara profesional</p>
+                </div>
+
+                <form action="/register" method="POST">
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="text" name="fullname" class="form-control bg-light border-0" placeholder="Nama" required>
+                                <label>Nama Lengkap</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="text" name="username" class="form-control bg-light border-0" id="userInput" placeholder="User" required>
+                                <label>Username</label>
+                                <span class="position-absolute top-50 end-0 translate-middle-y me-3" id="userStatus"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="number" name="whatsappNumber" class="form-control bg-light border-0" placeholder="628" required>
+                        <label>WhatsApp Owner (628xxx)</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="email" name="email" class="form-control bg-light border-0" placeholder="Email" required>
+                        <label>Email Address</label>
+                    </div>
+
+                    <div class="form-floating mb-2 position-relative">
+                        <input type="password" name="password" class="form-control bg-light border-0" id="regPass" placeholder="Pass" required>
+                        <label>Password</label>
+                        <i class="fas fa-eye text-muted position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" onclick="togglePass('regPass', this)"></i>
+                    </div>
+                    <div class="progress mb-3" style="height: 5px;">
+                        <div class="progress-bar bg-danger" id="passStrength" style="width: 0%"></div>
+                    </div>
+                    <small class="d-block text-muted mb-4" style="font-size: 11px;">Gunakan simbol (@#$_&) untuk keamanan ekstra.</small>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">Daftar Sekarang</button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <span class="text-muted small">Sudah punya akun? <a href="/login" class="text-primary fw-bold text-decoration-none">Login</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>
+<script>
+    const userInput = document.getElementById('userInput');
+    const userStatus = document.getElementById('userStatus');
+    const regPass = document.getElementById('regPass');
+    const passStrength = document.getElementById('passStrength');
+
+    userInput.addEventListener('keyup', async function() {
+        if(this.value.length > 3) {
+            const res = await fetch('/api/check-user', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: this.value }) });
+            const data = await res.json();
+            if(data.available) userStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i>'; 
+            else userStatus.innerHTML = '<i class="fas fa-times-circle text-danger"></i>';
+        } else userStatus.innerHTML = '';
+    });
+
+    regPass.addEventListener('keyup', function() {
+        let strength = 0;
+        if(this.value.match(/[a-z]+/)) strength += 1;
+        if(this.value.match(/[A-Z]+/)) strength += 1;
+        if(this.value.match(/[0-9]+/)) strength += 1;
+        if(this.value.match(/[$@#&!]+/)) strength += 1;
+
+        if(this.value.length < 6) strength = 0;
+
+        let width = strength * 25;
+        let color = strength < 2 ? 'bg-danger' : strength < 3 ? 'bg-warning' : 'bg-success';
+        
+        passStrength.style.width = width + '%';
+        passStrength.className = 'progress-bar ' + color;
+    });
+
+    function togglePass(id, icon) {
+        const input = document.getElementById(id);
+        if(input.type === "password") { input.type = "text"; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+        else { input.type = "password"; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+    }
+</script>
+</body>
+</html>

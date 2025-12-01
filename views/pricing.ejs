@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('partials/header') %>
+<head>
+    <style>
+        body { background: #f4f6f9; font-family: 'Poppins', sans-serif; }
+        .price-card { background: white; border-radius: 20px; transition: 0.3s; border: none; overflow: hidden; }
+        .price-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .badge-best { position: absolute; top: 0; start: 50%; transform: translate(-50%, -50%); background: #ffc107; color: #000; padding: 5px 15px; font-weight: bold; font-size: 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 py-3 shadow-sm">
+        <div class="d-flex align-items-center w-100">
+            <h5 class="mb-0 fw-bold text-secondary"><i class="fas fa-tags me-2"></i>Upgrade Plan</h5>
+            <div class="ms-auto">
+                <a href="/dashboard" class="btn btn-light rounded-pill px-4 fw-bold"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-dark display-6">Pilih Paket Server</h2>
+            <p class="text-muted">Tambah slot server untuk menjalankan lebih banyak bot sekaligus.</p>
+        </div>
+
+        <div class="row justify-content-center g-4">
+            
+            <div class="col-md-4">
+                <div class="card price-card h-100 p-4 border border-light shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold text-primary mb-3">BASIC SLOT</h5>
+                        <h1 class="fw-bold display-4 mb-0">Rp 10<span class="fs-5">rb</span></h1>
+                        <span class="text-muted small">Sekali Bayar</span>
+                        
+                        <hr class="my-4 opacity-10">
+                        
+                        <ul class="list-unstyled text-start mx-auto" style="max-width: 200px;">
+                            <li class="mb-3"><i class="fas fa-server text-primary me-2"></i> +1 Server Slot</li>
+                            <li class="mb-3"><i class="fas fa-memory text-primary me-2"></i> Max 1GB RAM</li>
+                            <li class="mb-3"><i class="fas fa-microchip text-primary me-2"></i> Shared CPU</li>
+                            <li class="mb-3"><i class="fas fa-clock text-primary me-2"></i> 24/7 Uptime</li>
+                        </ul>
+
+                        <form action="/payment/buy-plan" method="POST">
+                            <input type="hidden" name="amount" value="10000">
+                            <input type="hidden" name="slots" value="1">
+                            <button type="submit" class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 mt-3">Beli Sekarang</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card price-card h-100 p-4 border border-2 border-warning position-relative shadow">
+                    <div class="position-absolute top-0 start-50 translate-middle badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold shadow-sm">PALING LARIS</div>
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold text-dark mb-3">PRO GAMER</h5>
+                        <h1 class="fw-bold display-4 mb-0">Rp 25<span class="fs-5">rb</span></h1>
+                        <span class="text-muted small">Sekali Bayar (Hemat 5rb)</span>
+                        
+                        <hr class="my-4 opacity-10">
+                        
+                        <ul class="list-unstyled text-start mx-auto" style="max-width: 200px;">
+                            <li class="mb-3"><i class="fas fa-server text-warning me-2"></i> +3 Server Slots</li>
+                            <li class="mb-3"><i class="fas fa-memory text-warning me-2"></i> Max 3GB RAM</li>
+                            <li class="mb-3"><i class="fas fa-bolt text-warning me-2"></i> High CPU Priority</li>
+                            <li class="mb-3"><i class="fas fa-headset text-warning me-2"></i> Premium Support</li>
+                        </ul>
+
+                        <form action="/payment/buy-plan" method="POST">
+                            <input type="hidden" name="amount" value="25000">
+                            <input type="hidden" name="slots" value="3">
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 mt-3 text-white shadow-sm">Upgrade Pro</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="text-center mt-5 text-muted small">
+            <i class="fas fa-lock me-1"></i> Pembayaran diproses otomatis melalui QRIS (Pakasir).
+        </div>
+    </div>
+
+<%- include('partials/footer') %>
+</body>
+</html>
