@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<div class="container py-5">
+    <div class="text-center mb-5" data-aos="fade-down">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">UPDATES</span>
+        <h2 class="fw-bold display-5 mb-3">Changelog & Updates</h2>
+        <p class="text-muted lead mx-auto" style="max-width: 600px;">
+            Riwayat pembaruan, fitur baru, dan perbaikan bug pada platform Fiona Bot.
+        </p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <% if (changelogs.length === 0) { %>
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-history fa-3x mb-3 opacity-50"></i>
+                    <p>Belum ada catatan pembaruan.</p>
+                </div>
+            <% } else { %>
+                <% changelogs.forEach((log, index) => { %>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="fw-bold text-dark mb-1">v<%= log.version %> - <%= log.title %></h4>
+                                    <small class="text-muted"><i class="far fa-clock me-1"></i> <%= new Date(log.publishedAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></small>
+                                </div>
+                                <% if (index === 0) { %>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Latest</span>
+                                <% } %>
+                            </div>
+                            <div class="text-secondary" style="white-space: pre-line; line-height: 1.6;">
+                                <%= log.description %>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

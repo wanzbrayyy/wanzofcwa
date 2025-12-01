@@ -4,7 +4,7 @@ const ConfigSchema = new mongoose.Schema({
     botname: { type: String, default: 'FIONA BOT' },
     ownerName: { type: String, default: 'OWNER' },
     ownerNumber: { type: String, default: '6289526346592' },
-    telegram: { type: String, default: 'https://t.me/maverick_dar' },
+    telegram: { type: String, default: 'https://t.me/maverick_dark' },
     audioUrl: { type: String, default: 'https://files.catbox.moe/j2l430.mp3' },
     ppobApiKey: { type: String, default: '' },
     delayPush: { type: Number, default: 3000 },
@@ -24,21 +24,20 @@ const SessionSchema = new mongoose.Schema({
     customCode: { type: String, default: '' }
 }, { _id: false });
 
-const ActivityLogSchema = new mongoose.Schema({
-    action: String,
-    ip: String,
-    userAgent: String,
-    timestamp: { type: Date, default: Date.now }
-}, { _id: false });
-
 const LoginHistorySchema = new mongoose.Schema({
     ip: String,
     userAgent: String,
     timestamp: { type: Date, default: Date.now }
 }, { _id: false });
 
+const ReferralSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    ipAddress: String,
+    createdAt: { type: Date, default: Date.now }
+}, { _id: false });
+
 const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     fullname: { type: String, default: '' },
     whatsappNumber: { type: String, default: '' },
     email: { type: String, required: true, unique: true },
@@ -48,7 +47,7 @@ const UserSchema = new mongoose.Schema({
     spotifyId: { type: String, default: null },
     githubId: { type: String, default: null },
 
-    profilePic: { type: String, default: 'https://files.catbox.moe/k3612t2.jpg' },
+    profilePic: { type: String, default: 'https://files.catbox.moe/qrwd4d.png' },
     twoFactorSecret: String,
     twoFactorEnabled: { type: Boolean, default: false },
     sseoToken: { type: String, default: null },
@@ -59,12 +58,22 @@ const UserSchema = new mongoose.Schema({
     enableNotif: { type: Boolean, default: true },
     flashSaleClaimed: { type: Boolean, default: false },
     
-    sessionVersion: { type: Number, default: 1 },
-    activityLogs: [ActivityLogSchema],
+    referralCode: { type: String, unique: true },
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    referrals: [ReferralSchema],
+    
     loginHistory: [LoginHistorySchema],
-
+    
     defaultConfig: ConfigSchema, 
     sessions: [SessionSchema]
 });
+
+UserSchema.pre('save', function(next) {
+    if (this.isNew && !this.referralCode) {
+        this.referralCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+    }
+    next();
+});
+
 
 module.exports = mongoose.model('User', UserSchema);

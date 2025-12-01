@@ -51,7 +51,6 @@
                 </div>
             </div>
 
-            <!-- Modal Detail Tutorial -->
             <div class="modal fade" id="tutoModal<%= t._id %>" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content border-0 rounded-4 shadow-lg">
@@ -60,9 +59,16 @@
                             <button type="button" class="btn-close m-3" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body p-4">
-                            <% if(t.youtubeUrl) { %>
+                            <% if(t.youtubeUrl) { 
+                                let embedUrl = t.youtubeUrl;
+                                if (embedUrl.includes("watch?v=")) {
+                                    embedUrl = embedUrl.replace("watch?v=", "embed/");
+                                } else if (embedUrl.includes("youtu.be/")) {
+                                    embedUrl = embedUrl.replace("youtu.be/", "www.youtube.com/embed/");
+                                }
+                            %>
                                 <div class="ratio ratio-16x9 mb-4 rounded-4 overflow-hidden shadow-sm">
-                                    <iframe src="<%= t.youtubeUrl.replace('watch?v=', 'embed/') %>" allowfullscreen class="rounded-4"></iframe>
+                                    <iframe src="<%= embedUrl %>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                 </div>
                             <% } %>
                             
@@ -74,7 +80,7 @@
                                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold me-3 flex-shrink-0" style="width: 30px; height: 30px;">
                                                 <%= idx + 1 %>
                                             </div>
-                                            <div class="text-dark"><%= step %></div>
+                                            <div class="text-dark"><%- step.replace(/\n/g, '<br>') %></div>
                                         </div>
                                     <% }) %>
                                 </div>

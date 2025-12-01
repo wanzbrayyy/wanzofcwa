@@ -41,7 +41,6 @@
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
 
-        // Check for Restart Status
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('status') === 'restarted') {
             Swal.fire({
@@ -51,7 +50,6 @@
                 timer: 3000,
                 showConfirmButton: false
             });
-            // Clean URL
             const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.replaceState({path: newUrl}, '', newUrl);
         }
@@ -76,7 +74,7 @@
             driverObj.drive();
         }
 
-        <% if(typeof user !== 'undefined' && user.newUserTour) { %>
+        <% if (user && user.newUserTour) { %>
             setTimeout(() => {
                 driverObj.drive();
                 fetch('/api/tour-complete', { method: 'POST' });

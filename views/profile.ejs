@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<div class="container p-4">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8" data-aos="fade-up">
             
@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 p-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <h5 class="fw-bold mb-4"><i class="fas fa-user-edit text-primary me-2"></i>Edit Informasi</h5>
                 <form action="/profile/update" method="POST" enctype="multipart/form-data">
                     <input type="file" name="profilePic" id="fileInput" class="d-none" accept="image/*" onchange="document.getElementById('previewImg').src = window.URL.createObjectURL(this.files[0])">
@@ -66,11 +66,58 @@
                 </form>
             </div>
 
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <h5 class="fw-bold mb-4"><i class="fas fa-user-friends text-success me-2"></i>Sistem Referral</h5>
+                <p class="text-muted small">Undang teman Anda menggunakan link di bawah ini. Setiap 5 teman yang berhasil mendaftar, Anda akan mendapatkan bonus +1 Slot Cloud Server secara otomatis.</p>
+                <div class="bg-light p-3 rounded-3 text-center border mb-3">
+                    <small class="text-muted d-block mb-1">LINK REFERRAL ANDA</small>
+                    <div class="input-group">
+                        <input type="text" class="form-control fw-bold text-center border-0 bg-white" value="<%= `https://wanzofc.site/register?ref=${user.referralCode}` %>" id="referralLink" readonly>
+                        <button class="btn btn-outline-primary" onclick="copyReferral()">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: <%= (user.referrals.length % 5) * 20 %>%" aria-valuenow="<%= user.referrals.length % 5 %>" aria-valuemin="0" aria-valuemax="5">
+                        <span class="fw-bold"><%= user.referrals.length % 5 %> / 5 Menuju Bonus</span>
+                    </div>
+                </div>
+                <p class="text-center small mt-2 fw-bold text-muted">Total Teman Direferensikan: <span class="text-success"><%= user.referrals.length %></span></p>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4" data-aos="fade-up" data-aos-delay="300">
+                <h5 class="fw-bold mb-4"><i class="fas fa-history text-danger me-2"></i>Riwayat Login</h5>
+                <div class="table-responsive">
+                    <table class="table table-borderless table-hover small align-middle">
+                        <thead>
+                            <tr class="text-muted border-bottom">
+                                <th>Waktu</th>
+                                <th>Alamat IP</th>
+                                <th>Perangkat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if(user.loginHistory && user.loginHistory.length > 0) { %>
+                                <% user.loginHistory.slice(0, 5).forEach(log => { %>
+                                    <tr>
+                                        <td><%= new Date(log.timestamp).toLocaleString() %></td>
+                                        <td><span class="badge bg-light text-dark border"><%= log.ip %></span></td>
+                                        <td class="text-truncate" style="max-width: 200px;"><%= log.userAgent %></td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr><td colspan="3" class="text-center py-3">Belum ada riwayat login.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
-<!-- Ticket Modal -->
 <div class="modal fade" id="ticketModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
@@ -90,5 +137,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    function copyReferral() {
+        var copyText = document.getElementById("referralLink");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(copyText.value);
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil Disalin!',
+            text: 'Bagikan link ini ke teman Anda.',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
+</script>
 
 <%- include('partials/footer') %>

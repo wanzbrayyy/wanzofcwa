@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<div class="container py-5">
+    <h3 class="fw-bold mb-4">Edit User: <%= targetUser.username %></h3>
+    
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <form action="/admin/user/update/<%= targetUser._id %>" method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Role</label>
+                        <select name="role" class="form-select">
+                            <option value="user" <%= targetUser.role === 'user' ? 'selected' : '' %>>User</option>
+                            <option value="admin" <%= targetUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status Premium</label>
+                        <select name="isPremium" class="form-select">
+                            <option value="true" <%= targetUser.isPremium ? 'selected' : '' %>>Premium</option>
+                            <option value="false" <%= !targetUser.isPremium ? 'selected' : '' %>>Free</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Server Slots</label>
+                        <input type="number" name="serverSlots" class="form-control" value="<%= targetUser.serverSlots %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Max Bot Sessions</label>
+                        <input type="number" name="maxSessions" class="form-control" value="<%= targetUser.maxSessions %>">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill px-5 mt-4">Simpan Perubahan</button>
+                <a href="/admin/dashboard" class="btn btn-light rounded-pill px-4 mt-4">Batal</a>
+            </form>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

@@ -190,11 +190,17 @@
                         </div>
                     </div>
                     <h5 class="fw-bold mb-1 text-dark"><%= p.name %></h5>
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
-                            <i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Running
-                        </span>
-                    </div>
+                    <% if (p.projectType === 'web' && p.subdomain) { %>
+                        <a href="https://<%= p.subdomain %>.<%= APP_DOMAIN %>" target="_blank" class="text-decoration-none small text-primary d-block mb-3 fw-bold">
+                            <i class="fas fa-globe me-1"></i><%= p.subdomain %>.<%= APP_DOMAIN %>
+                        </a>
+                    <% } else { %>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                <i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Running
+                            </span>
+                        </div>
+                    <% } %>
                     <p class="text-muted small mb-4 text-truncate"><%= p.description || 'NodeJS Container Environment' %></p>
                     <a href="/user/project/<%= p.uuid %>" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-2">
                         Open Console <i class="fas fa-arrow-right ms-2"></i>
@@ -278,7 +284,6 @@
             </div>
         </div>
 
-        <!-- Horizontal Config Modal (Tombol Simpan Di Atas) -->
         <div class="modal fade" id="configModal-<%= sess.sessionId %>" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered modal-xl">
                 <div class="modal-content border-0 shadow-lg rounded-4">
@@ -401,7 +406,88 @@
     </button>
 </div>
 
-<%- include('partials/modals') %>
+<div class="modal fade" id="createProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-dark text-white">
+                <div>
+                    <h5 class="modal-title fw-bold">Deploy New Server</h5>
+                    <p class="text-white-50 small mb-0">Buat instance cloud baru.</p>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/project/create" method="POST">
+                <div class="modal-body p-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="name" class="form-control bg-light border-0" placeholder="Nama Server" required>
+                        <label>Nama Server</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select name="projectType" class="form-select bg-light border-0">
+                            <option value="bot" selected>WhatsApp Bot (Node.js)</option>
+                            <option value="web">Web Service (Portfolio, etc)</option>
+                        </select>
+                        <label>Tipe Proyek</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea name="description" class="form-control bg-light border-0" style="height: 100px" placeholder="Deskripsi"></textarea>
+                        <label>Deskripsi (Opsional)</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold shadow-sm">Deploy Server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addBotModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0">
+                <div>
+                    <h5 class="modal-title fw-bold">Pairing Code</h5>
+                    <p class="text-muted small mb-0">Hubungkan bot tanpa scan QR.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-floating mb-3">
+                    <input type="number" id="phoneInput" class="form-control bg-light border-0 fw-bold text-center fs-4" placeholder="628xxx">
+                    <label class="w-100 text-center">Nomor WhatsApp (628xxx)</label>
+                </div>
+                <button class="btn btn-success w-100 btn-lg rounded-pill fw-bold shadow-sm" onclick="requestPairing()">
+                    <i class="fas fa-link me-2"></i>Dapatkan Kode
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="donateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 bg-warning bg-opacity-10">
+                <h5 class="modal-title fw-bold text-warning-emphasis">Traktir Kopi ☕</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/payment/donate" method="POST">
+                <div class="modal-body p-4">
+                    <label class="small fw-bold text-muted mb-2">NOMINAL DONASI</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 fw-bold">Rp</span>
+                        <input type="number" name="amount" class="form-control form-control-lg bg-light border-0 fw-bold" placeholder="10000" min="1000" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold text-white shadow-sm">Lanjut Pembayaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <%- include('partials/footer') %>
 
 <script>
@@ -432,7 +518,6 @@
 
     socket.on('error', msg => Swal.fire('Gagal', msg, 'error'));
     
-    // STRICT FIX: NO RELOAD IN SOCKET LISTENER
     socket.on('connection-status', d => { 
         const statusBadge = document.getElementById(`status-${d.sessionId}`);
         const statusText = document.getElementById(`text-${d.sessionId}`);
@@ -442,7 +527,6 @@
                 statusBadge.classList.remove('bg-warning');
                 statusBadge.classList.add('bg-success');
                 statusText.innerText = 'connected';
-                // Only alert via Toast, never reload
                 const toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
                 toast.fire({ icon: 'success', title: 'Bot Terhubung!' });
             } else {
@@ -474,35 +558,16 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('status') === 'restarted') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Restart Berhasil',
-                text: 'Sesi bot telah dimuat ulang!',
-                timer: 2500,
-                showConfirmButton: false
-            });
-            // Cleanup URL
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({path: newUrl}, '', newUrl);
-        } else if (urlParams.get('status') === 'success_claim') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Claim Berhasil',
-                text: 'Reward telah ditambahkan ke akun anda!',
-                timer: 2500,
-                showConfirmButton: false
-            });
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({path: newUrl}, '', newUrl);
-        } else if (urlParams.get('status') === 'already_claimed') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: 'Anda sudah pernah klaim promo ini!',
-                timer: 2500,
-                showConfirmButton: false
-            });
+        let status = urlParams.get('status');
+        if (status) {
+            let title, text, icon;
+            if (status === 'restarted') { title = 'Restart Berhasil'; text = 'Sesi bot telah dimuat ulang!'; icon = 'success'; }
+            else if (status === 'success_claim') { title = 'Claim Berhasil'; text = 'Reward telah ditambahkan ke akun anda!'; icon = 'success'; }
+            else if (status === 'already_claimed') { title = 'Gagal'; text = 'Anda sudah pernah klaim promo ini!'; icon = 'error'; }
+            else if (status === 'NoPorts') { title = 'Gagal Deploy'; text = 'Tidak ada port tersedia saat ini.'; icon = 'error'; }
+            else if (status === 'SubdomainFail') { title = 'Gagal Deploy'; text = 'Gagal membuat subdomain.'; icon = 'error'; }
+            
+            if (title) Swal.fire({ icon, title, text, timer: 2500, showConfirmButton: false });
             const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.replaceState({path: newUrl}, '', newUrl);
         }

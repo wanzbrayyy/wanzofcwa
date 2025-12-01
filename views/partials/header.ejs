@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fiona Bot Panel</title>
     
-    <!-- PWA Support -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#6c5ce7">
     <link rel="apple-touch-icon" href="https://files.catbox.moe/k3612t2.jpg">
@@ -115,6 +114,7 @@
         }
     </script>
 
+    <% if (user) { %>
     <nav class="navbar navbar-expand-lg navbar-top fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold fs-4" href="/dashboard">
@@ -125,26 +125,34 @@
                     <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='dashboard'?'text-primary fw-bold':'' %>" href="/dashboard">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='news'?'text-primary fw-bold':'' %>" href="/news">News</a></li>
                     <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='tutorial'?'text-primary fw-bold':'' %>" href="/tutorial">Tutorial</a></li>
+                    <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='changelog'?'text-primary fw-bold':'' %>" href="/changelog">Changelog</a></li>
                     <li class="nav-item"><a class="nav-link <%= typeof page != 'undefined' && page=='settings'?'text-primary fw-bold':'' %>" href="/settings">Settings</a></li>
                 </ul>
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                        <img src="<%= typeof user != 'undefined' ? user.profilePic : '' %>" class="rounded-circle border" width="40" height="40">
+                        <img src="<%= user.profilePic %>" class="rounded-circle border" width="40" height="40">
                         <div class="ms-2 d-none d-lg-block text-dark">
-                            <small class="d-block fw-bold"><%= typeof user != 'undefined' ? user.username : 'Guest' %></small>
+                            <small class="d-block fw-bold"><%= user.username %></small>
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2">
                         <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="/list-ticket"><i class="fas fa-headset me-2"></i>Support</a></li>
                         <li><hr class="dropdown-divider"></li>
+                        <% if (isImpersonating) { %>
+                            <li><a class="dropdown-item text-warning" href="/admin/revert"><i class="fas fa-user-secret me-2"></i>Stop Impersonating</a></li>
+                        <% } %>
                         <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </nav>
-
+    <% if (isImpersonating) { %>
+        <div class="alert alert-warning text-center rounded-0 fw-bold border-0" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;">
+            Anda sedang login sebagai <%= user.username %>. <a href="/admin/revert" class="alert-link">Kembali ke Akun Admin</a>.
+        </div>
+    <% } %>
     <div class="bottom-nav">
         <a href="/dashboard" class="nav-item-mobile <%= typeof page != 'undefined' && page=='dashboard'?'active':'' %>">
             <i class="fas fa-home"></i> Home
@@ -163,7 +171,12 @@
             <div class="logout-menu" id="mobileLogout">
                 <a href="/profile" class="d-block text-decoration-none text-dark mb-2 small"><i class="fas fa-user me-2"></i>Profile</a>
                 <a href="/list-ticket" class="d-block text-decoration-none text-dark mb-2 small"><i class="fas fa-headset me-2"></i>Support</a>
+                <a href="/changelog" class="d-block text-decoration-none text-dark mb-2 small"><i class="fas fa-history me-2"></i>Changelog</a>
+                <% if (isImpersonating) { %>
+                    <a href="/admin/revert" class="d-block text-decoration-none text-warning small mb-2"><i class="fas fa-user-secret me-2"></i>Back to Admin</a>
+                <% } %>
                 <a href="/logout" class="d-block text-decoration-none text-danger small"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
             </div>
         </div>
     </div>
+    <% } %>

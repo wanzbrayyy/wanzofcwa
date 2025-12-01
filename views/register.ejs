@@ -1,97 +1,224 @@
 <%- include('partials/header') %>
-<div class="d-flex align-items-center justify-content-center min-vh-100 bg-white py-5">
+<style>
+    .register-container {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .form-control-lg {
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        border: 1px solid transparent;
+        font-size: 0.95rem;
+        padding: 1rem 1.2rem;
+        transition: all 0.3s;
+    }
+    .form-control-lg:focus {
+        background-color: #fff;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+    }
+    .btn-primary-lg {
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+        border: none;
+        transition: transform 0.2s;
+    }
+    .btn-primary-lg:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+    }
+    .social-btn {
+        height: 50px;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s;
+    }
+    .social-btn:hover {
+        background-color: #f1f2f6;
+        transform: translateY(-2px);
+    }
+    .password-strength {
+        height: 4px;
+        border-radius: 2px;
+        transition: all 0.3s;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    .status-icon {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        z-index: 5;
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5" data-aos="fade-up">
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold">Buat Akun Baru</h3>
-                    <p class="text-muted small">Mulai kelola bot WhatsApp Anda secara profesional</p>
-                </div>
+            <div class="col-md-7 col-lg-6" data-aos="fade-up">
+                <div class="register-container p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="fas fa-rocket fa-2x"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">Buat Akun Baru</h3>
+                        <p class="text-muted small">Mulai kelola bot WhatsApp Anda dengan mudah</p>
+                    </div>
 
-                <form action="/register" method="POST">
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <div class="form-floating">
-                                <input type="text" name="fullname" class="form-control bg-light border-0" placeholder="Nama" required>
-                                <label>Nama Lengkap</label>
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger border-0 shadow-sm rounded-3 small mb-4 d-flex align-items-center">
+                            <i class="fas fa-exclamation-circle me-2 fs-5"></i>
+                            <div><%= error %></div>
+                        </div>
+                    <% } %>
+
+                    <form action="/register" method="POST">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" name="fullname" class="form-control form-control-lg" placeholder="Nama Lengkap" value="<%= typeof oldData != 'undefined' ? oldData.fullname : '' %>" required>
+                                    <label>Nama Lengkap</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="text" name="username" id="usernameInput" class="form-control form-control-lg" placeholder="Username" value="<%= typeof oldData != 'undefined' ? oldData.username : '' %>" required>
+                                    <label>Username</label>
+                                    <span id="usernameStatus" class="status-icon"></span>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="number" name="whatsappNumber" class="form-control form-control-lg" placeholder="628xx" value="<%= typeof oldData != 'undefined' ? oldData.whatsappNumber : '' %>" required>
+                            <label>WhatsApp Owner (628xxx)</label>
+                        </div>
+
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="email" name="email" id="emailInput" class="form-control form-control-lg" placeholder="name@example.com" value="<%= typeof oldData != 'undefined' ? oldData.email : '' %>" required>
+                            <label>Email Address</label>
+                            <span id="emailStatus" class="status-icon"></span>
+                        </div>
+
+                        <div class="form-floating mb-2 position-relative">
+                            <input type="password" name="password" class="form-control form-control-lg" id="regPass" placeholder="Password" required>
+                            <label>Password</label>
+                            <i class="fas fa-eye text-muted position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer p-2" onclick="togglePass('regPass', this)"></i>
+                        </div>
+                        <div class="progress password-strength bg-light">
+                            <div class="progress-bar bg-danger" id="passStrengthBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input type="text" name="referralCode" id="referralInput" class="form-control form-control-lg font-monospace text-uppercase" placeholder="KODE" value="<%= typeof oldData != 'undefined' ? oldData.referralCode : '' %>">
+                            <label>Kode Referral (Opsional)</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-primary-lg w-100 mb-4 shadow text-white">Daftar Sekarang</button>
+                    </form>
+
+                    <div class="position-relative text-center mb-4">
+                        <hr class="text-muted opacity-25">
+                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small fw-bold">ATAU DAFTAR DENGAN</span>
+                    </div>
+
+                    <div class="row g-2">
                         <div class="col-6">
-                            <div class="form-floating">
-                                <input type="text" name="username" class="form-control bg-light border-0" id="userInput" placeholder="User" required>
-                                <label>Username</label>
-                                <span class="position-absolute top-50 end-0 translate-middle-y me-3" id="userStatus"></span>
-                            </div>
+                            <a href="/auth/spotify" class="btn btn-light border social-btn text-muted">
+                                <i class="fab fa-spotify text-success fs-5"></i> Spotify
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="/auth/github" class="btn btn-light border social-btn text-muted">
+                                <i class="fab fa-github text-dark fs-5"></i> GitHub
+                            </a>
                         </div>
                     </div>
 
-                    <div class="form-floating mb-3">
-                        <input type="number" name="whatsappNumber" class="form-control bg-light border-0" placeholder="628" required>
-                        <label>WhatsApp Owner (628xxx)</label>
+                    <div class="text-center mt-5">
+                        <span class="text-muted small">Sudah punya akun? <a href="/login" class="text-primary fw-bold text-decoration-none">Masuk Disini</a></span>
                     </div>
-
-                    <div class="form-floating mb-3">
-                        <input type="email" name="email" class="form-control bg-light border-0" placeholder="Email" required>
-                        <label>Email Address</label>
-                    </div>
-
-                    <div class="form-floating mb-2 position-relative">
-                        <input type="password" name="password" class="form-control bg-light border-0" id="regPass" placeholder="Pass" required>
-                        <label>Password</label>
-                        <i class="fas fa-eye text-muted position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer" onclick="togglePass('regPass', this)"></i>
-                    </div>
-                    <div class="progress mb-3" style="height: 5px;">
-                        <div class="progress-bar bg-danger" id="passStrength" style="width: 0%"></div>
-                    </div>
-                    <small class="d-block text-muted mb-4" style="font-size: 11px;">Gunakan simbol (@#$_&) untuk keamanan ekstra.</small>
-
-                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">Daftar Sekarang</button>
-                </form>
-
-                <div class="text-center mt-4">
-                    <span class="text-muted small">Sudah punya akun? <a href="/login" class="text-primary fw-bold text-decoration-none">Login</a></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <%- include('partials/footer') %>
+
 <script>
-    const userInput = document.getElementById('userInput');
-    const userStatus = document.getElementById('userStatus');
-    const regPass = document.getElementById('regPass');
-    const passStrength = document.getElementById('passStrength');
-
-    userInput.addEventListener('keyup', async function() {
-        if(this.value.length > 3) {
-            const res = await fetch('/api/check-user', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: this.value }) });
-            const data = await res.json();
-            if(data.available) userStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i>'; 
-            else userStatus.innerHTML = '<i class="fas fa-times-circle text-danger"></i>';
-        } else userStatus.innerHTML = '';
-    });
-
-    regPass.addEventListener('keyup', function() {
-        let strength = 0;
-        if(this.value.match(/[a-z]+/)) strength += 1;
-        if(this.value.match(/[A-Z]+/)) strength += 1;
-        if(this.value.match(/[0-9]+/)) strength += 1;
-        if(this.value.match(/[$@#&!]+/)) strength += 1;
-
-        if(this.value.length < 6) strength = 0;
-
-        let width = strength * 25;
-        let color = strength < 2 ? 'bg-danger' : strength < 3 ? 'bg-warning' : 'bg-success';
-        
-        passStrength.style.width = width + '%';
-        passStrength.className = 'progress-bar ' + color;
-    });
-
     function togglePass(id, icon) {
         const input = document.getElementById(id);
-        if(input.type === "password") { input.type = "text"; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
-        else { input.type = "password"; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        if(input.type === "password") { 
+            input.type = "text"; 
+            icon.classList.replace('fa-eye', 'fa-eye-slash'); 
+        } else { 
+            input.type = "password"; 
+            icon.classList.replace('fa-eye-slash', 'fa-eye'); 
+        }
     }
+
+    const passInput = document.getElementById('regPass');
+    const strengthBar = document.getElementById('passStrengthBar');
+
+    passInput.addEventListener('keyup', function() {
+        let strength = 0;
+        if(this.value.length > 5) strength += 25;
+        if(this.value.match(/[A-Z]/)) strength += 25;
+        if(this.value.match(/[0-9]/)) strength += 25;
+        if(this.value.match(/[^a-zA-Z0-9]/)) strength += 25;
+
+        strengthBar.style.width = strength + '%';
+        if(strength < 50) strengthBar.className = 'progress-bar bg-danger';
+        else if(strength < 75) strengthBar.className = 'progress-bar bg-warning';
+        else strengthBar.className = 'progress-bar bg-success';
+    });
+
+    const usernameInput = document.getElementById('usernameInput');
+    const usernameStatus = document.getElementById('usernameStatus');
+    const emailInput = document.getElementById('emailInput');
+    const emailStatus = document.getElementById('emailStatus');
+
+    let timeout = null;
+
+    usernameInput.addEventListener('keyup', function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(async () => {
+            if(this.value.length > 3) {
+                const res = await fetch('/api/check-username', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: this.value }) });
+                const data = await res.json();
+                usernameStatus.innerHTML = data.available ? '<i class="fas fa-check-circle text-success"></i>' : '<i class="fas fa-times-circle text-danger"></i>';
+            } else usernameStatus.innerHTML = '';
+        }, 500);
+    });
+
+    emailInput.addEventListener('keyup', function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(async () => {
+            if(this.value.length > 5 && this.value.includes('@')) {
+                const res = await fetch('/api/check-email', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: this.value }) });
+                const data = await res.json();
+                emailStatus.innerHTML = data.available ? '<i class="fas fa-check-circle text-success"></i>' : '<i class="fas fa-times-circle text-danger"></i>';
+            } else emailStatus.innerHTML = '';
+        }, 500);
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode) {
+            document.getElementById('referralInput').value = refCode;
+        }
+    });
 </script>
 </body>
 </html>
