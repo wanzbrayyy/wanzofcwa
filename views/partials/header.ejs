@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fiona Bot Panel</title>
-    
-    <link rel="manifest" href="/manifest.json">
+    <title>WANZOFC X XDPZQ</title>
+    <meta name="description" content="Panel Bot WhatsApp Terbaik by WANZOFC X XDPZQ. Manage bot anda dengan mudah, cepat, dan responsif.">
+    <meta name="keywords" content="bot whatsapp, wanzofc, xdpzq, panel bot, whatsapp bot web">
+    <meta name="author" content="WANZOFC X XDPZQ">
     <meta name="theme-color" content="#6c5ce7">
-    <link rel="apple-touch-icon" href="https://files.catbox.moe/k3612t2.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content=https://files.catbox.moe/8iwfn7.png">
+    <meta property="og:title" content="WANZOFC X XDPZQ">
+    <meta property="og:description" content="official panel management bot whatsApp. klik untuk akses.">
+    <meta property="og:image" content="https://files.catbox.moe/8iwfn7.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/8iwfn7.png">
+    <link rel="shortcut icon" href="https://files.catbox.moe/8iwfn7.png" type="image/x-icon">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +41,18 @@
             background-color: var(--bg-body);
             color: var(--dark);
             padding-bottom: 80px; 
+            /* Padding top removed here, handled by media query or specific layout */
         }
+        .brand-header-img {
+            width: 100%;
+            height: 200px; 
+            object-fit: cover;
+            object-position: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.2);
+            margin-bottom: 20px;
+        }
+
         .navbar-top {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -99,9 +118,13 @@
         @media(min-width: 992px) {
             .bottom-nav { display: none; }
             body { padding-bottom: 0; padding-top: 80px; }
+            /* Pada desktop, banner tidak perlu terlalu tinggi jika ada navbar */
+            .brand-header-img { height: 250px; margin-top: 10px; }
         }
         @media(max-width: 991px) {
             .navbar-top { display: none; }
+            /* Pada mobile, banner di paling atas */
+            .brand-header-img { height: 160px; }
         }
     </style>
 </head>
@@ -118,7 +141,7 @@
     <nav class="navbar navbar-expand-lg navbar-top fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold fs-4" href="/dashboard">
-                <i class="fas fa-robot text-primary me-2"></i>Fiona
+                <i class="fas fa-robot text-primary me-2"></i>WANZOFC X XDPZQ
             </a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav mx-auto gap-4">
@@ -148,11 +171,20 @@
             </div>
         </div>
     </nav>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <img src="https://files.catbox.moe/8iwfn7.png" alt="Header Banner" class="brand-header-img shadow-sm">
+            </div>
+        </div>
+    </div>
     <% if (isImpersonating) { %>
         <div class="alert alert-warning text-center rounded-0 fw-bold border-0" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;">
             Anda sedang login sebagai <%= user.username %>. <a href="/admin/revert" class="alert-link">Kembali ke Akun Admin</a>.
         </div>
     <% } %>
+
+    <!-- NAVBAR MOBILE (BOTTOM) -->
     <div class="bottom-nav">
         <a href="/dashboard" class="nav-item-mobile <%= typeof page != 'undefined' && page=='dashboard'?'active':'' %>">
             <i class="fas fa-home"></i> Home

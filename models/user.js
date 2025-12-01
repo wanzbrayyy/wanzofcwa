@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-
+const crypto = require('crypto');
 const ConfigSchema = new mongoose.Schema({
     botname: { type: String, default: 'FIONA BOT' },
     ownerName: { type: String, default: 'OWNER' },
     ownerNumber: { type: String, default: '6289526346592' },
-    telegram: { type: String, default: 'https://t.me/maverick_dark' },
+    telegram: { type: String, default: 'https://t.me/maverick_dar' },
     audioUrl: { type: String, default: 'https://files.catbox.moe/j2l430.mp3' },
     ppobApiKey: { type: String, default: '' },
     delayPush: { type: Number, default: 3000 },
@@ -47,7 +47,7 @@ const UserSchema = new mongoose.Schema({
     spotifyId: { type: String, default: null },
     githubId: { type: String, default: null },
 
-    profilePic: { type: String, default: 'https://files.catbox.moe/qrwd4d.png' },
+    profilePic: { type: String, default: 'https://files.catbox.moe/k3612t2.jpg' },
     twoFactorSecret: String,
     twoFactorEnabled: { type: Boolean, default: false },
     sseoToken: { type: String, default: null },
@@ -67,13 +67,11 @@ const UserSchema = new mongoose.Schema({
     defaultConfig: ConfigSchema, 
     sessions: [SessionSchema]
 });
-
 UserSchema.pre('save', function(next) {
     if (this.isNew && !this.referralCode) {
         this.referralCode = crypto.randomBytes(4).toString('hex').toUpperCase();
     }
     next();
 });
-
 
 module.exports = mongoose.model('User', UserSchema);

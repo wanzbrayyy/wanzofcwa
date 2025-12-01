@@ -1,0 +1,95 @@
+/ (Root Folder wanzofc)
+├── android/
+│   ├── app/
+│   │   ├── src/
+│   │   │   ├── main/
+│   │   │   │   ├── java/
+│   │   │   │   │   └── com/
+│   │   │   │   │       └── wanzofc/
+│   │   │   │   │           └── xdpzq/
+│   │   │   │   │               ├── api/
+│   │   │   │   │               │   ├── ApiService.java
+│   │   │   │   │               │   └── RetrofitClient.java
+│   │   │   │   │               ├── models/
+│   │   │   │   │               │   ├── LoginRequest.java
+│   │   │   │   │               │   ├── LoginResponse.java
+│   │   │   │   │               │   ├── StatsRequest.java
+│   │   │   │   │               │   └── StatsResponse.java
+│   │   │   │   │               ├── DashboardActivity.java
+│   │   │   │   │               └── LoginActivity.java
+│   │   │   │   ├── res/
+│   │   │   │   │   ├── drawable/
+│   │   │   │   │   │   └── ic_launcher_background.xml
+│   │   │   │   │   ├── layout/
+│   │   │   │   │   │   ├── activity_dashboard.xml
+│   │   │   │   │   │   └── activity_login.xml
+│   │   │   │   │   ├── mipmap-anydpi-v26/
+│   │   │   │   │   │   ├── ic_launcher.xml
+│   │   │   │   │   │   └── ic_launcher_round.xml
+│   │   │   │   │   ├── values/
+│   │   │   │   │   │   ├── colors.xml
+│   │   │   │   │   │   ├── strings.xml
+│   │   │   │   │   │   └── themes.xml
+│   │   │   │   │   └── xml/
+│   │   │   │   │       ├── backup_rules.xml
+│   │   │   │   │       └── data_extraction_rules.xml
+│   │   │   │   └── AndroidManifest.xml
+│   │   ├── build.gradle
+│   │   └── proguard-rules.pro
+│   ├── gradle/
+│   │   └── wrapper/
+│   │       ├── gradle-wrapper.jar
+│   │       └── gradle-wrapper.properties
+│   ├── build.gradle
+│   ├── gradle.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   └── settings.gradle
+├── collection/
+│   ├── database.json
+│   ├── penting.json
+│   ├── thumbnail.json
+│   └── users.json
+├── lib/
+│   ├── message.js
+│   └── serialize.js
+├── models/
+│   ├── changelog.js
+│   ├── post.js
+│   ├── project.js
+│   ├── setting.js
+│   ├── ticket.js
+│   ├── transaction.js
+│   ├── tutorial.js
+│   └── user.js
+├── public/
+│   ├── css/
+│   │   └── style.css
+│   ├── images/
+│   │   └── logo.png
+│   ├── js/
+│   │   └── script.js
+│   ├── uploads/
+│   └── manifest.json
+├── views/
+│   ├── partials/
+│   │   ├── footer.ejs
+│   │   ├── header.ejs
+│   │   └── modals.ejs
+│   ├── 2fa-verify.ejs
+│   ├── 403.ejs
+│   ├── 404.ejs
+│   ├── admin-dashboard.ejs
+│   ├── admin-user-edit.ejs
+│   ├── changelog.ejs
+│   ├── dashboard.ejs
+│   ├── detail-post.ejs
+│   ├── files.ejs
+│   ├── landing.ejs
+│   ├── list-ticket.ejs
+│   ├── login.ejs
+│   ├── maintenance.ejs
+│   ├── news.ejs
+│   ├── pricing.ejs
+│   ├── profile.ejs
+│   ├── projec

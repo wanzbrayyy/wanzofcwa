@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WANZOFC X XDPZQ</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login_subtitle">Sign in to your dashboard</string>
+    <string name="email_hint">Email Address</string>
+    <string name="password_hint">Password</string>
+    <string name="login_btn">LOGIN</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="loading">Loading...</string>
+</resources>
