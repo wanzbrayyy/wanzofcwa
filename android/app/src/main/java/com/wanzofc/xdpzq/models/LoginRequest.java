@@ -1,11 +1,5 @@
 package com.wanzofc.xdpzq.models;
-
 public class LoginRequest {
-    private final String email;
-    private final String password;
-
-    public LoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
+    private String email, password;
+    public LoginRequest(String e, String p) { this.email=e; this.password=p; }
 }

@@ -2,49 +2,57 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#F8F9FA"
     android:gravity="center"
-    android:padding="32dp"
-    android:background="#F8F9FA">
+    android:orientation="vertical"
+    android:padding="30dp">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginBottom="20dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WANZOFC BOT"
-        android:textSize="32sp"
+        android:text="Welcome Back"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="#6C5CE7"
-        android:layout_marginBottom="48dp" />
+        android:textColor="#2D3436"/>
 
-    <EditText
-        android:id="@+id/etEmail"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@android:color/white"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:hint="Email Address"
-        android:inputType="textEmailAddress"
-        android:padding="16dp"
-        android:elevation="2dp"
-        android:layout_marginBottom="16dp" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etEmail" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/etPassword"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@android:color/white"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="16dp"
-        android:elevation="2dp"
-        android:layout_marginBottom="32dp" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPassword" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_marginTop="25dp"
         android:text="LOGIN"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#6C5CE7" />
+        android:backgroundTint="#6c5ce7"/>
 
+    <TextView
+        android:id="@+id/btnRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Create Account"
+        android:textColor="#6c5ce7"
+        android:textStyle="bold"/>
 </LinearLayout>
